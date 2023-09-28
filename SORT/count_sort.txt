@@ -40,7 +40,7 @@ void sort_arr(int *a,int n)
         }
     }
 
-    count = (int *)calloc(max+1,sizeof(int));
+    count = (int *)calloc(max,sizeof(int));
    
     //step 2: Counting frequency of elements
 
@@ -117,4 +117,4 @@ int main()
     display_arr(a,n);
     
     return 0;
-} // We can't use it for negative values !!
+}

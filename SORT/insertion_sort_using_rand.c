@@ -40,7 +40,7 @@ void sort_arr(int *ptr,int cnt)
     int temp;
     
     for ( i = 1; i < cnt ; i++)   
-    {                                                       // You can write inner loop like this.
+    {                                                       //inner loop can be written like this.
         temp = ptr[i];                                      // for (j = i-1 ; j >= 0 ; j--)
                                                             // {
         for ( j = i-1; (j >= 0) && (temp < ptr[j]); j--)    //      if(temp < ptr[j])

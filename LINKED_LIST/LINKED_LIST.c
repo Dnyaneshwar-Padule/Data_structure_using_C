@@ -23,6 +23,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
+#include<time.h>
 //#include"myll.h"
 #define NEWNODE (struct node*)malloc(sizeof(struct node))
 
@@ -32,7 +33,7 @@ struct node
     struct node* next;
 };
 
-struct node* create(int n)
+struct node* create_manually(int n)
 {
     struct node *f=NULL,*t=NULL,*l=NULL;
 
@@ -60,6 +61,57 @@ struct node* create(int n)
         
         printf("Enter the data : ");
         scanf("%d",&t->data);
+        t->next = NULL;
+
+        l->next = t ;
+        l = l->next ;
+    }
+    
+    return f;
+}
+
+struct node* create_auto(int n)
+{
+    struct node *f=NULL,*t=NULL,*l=NULL;
+    int temp;
+
+    f = NEWNODE;
+    if (f==NULL)
+    {
+        printf("unable to allocate memory !\n");
+        exit(0);
+    }
+    
+    srand(time(NULL));
+
+    while (1)
+    {
+        temp = rand() % 100;
+        if (temp > 0)
+            break;
+    }
+    
+    f->data = temp;
+    f->next = NULL;
+    l = f;
+
+    for (int i = 2; i <= n; i++)
+    {
+        t = NEWNODE;
+        if (t == NULL)
+        {
+            printf("Unable to allocate memory !\n");
+            free(f);
+            return f;
+        }
+    
+        while (1)
+        {
+            temp = rand() % 100;
+            if (temp > 0)
+                break;
+        }
+        t->data = temp;
         t->next = NULL;
 
         l->next = t ;
@@ -300,7 +352,7 @@ struct node* append(struct node* f)
                 return f;
            }
            
-           t = create(n);
+           t = create_manually(n);
     }
 
     for ( s = f ;s->next != NULL;s = s->next);
@@ -314,9 +366,9 @@ struct node* append(struct node* f)
 unsigned int llength(struct node* f)
 {
     struct node *t = NULL;
-    unsigned int cnt=0;
+    unsigned int cnt=1;
 
-    for (t = f ; t != NULL ; t = t->next)
+    for (t = f ; t->next != NULL ; t = t->next)
         cnt++;
 
     return cnt;   
@@ -355,6 +407,7 @@ struct node* reverse(struct node* f)
         s = n; 
     }
     f = p;
+
     printf("\nLinked list is reversed successfully !\n");
     return f;  
 }
@@ -512,10 +565,195 @@ struct node* swap_pairwise(struct node* f)
     return f;
 }
 
+struct node* SWAP(struct node* f,unsigned int a_pos,unsigned int b_pos)
+{
+    struct node *t=NULL;
+    struct node *a_pre = NULL, *b_pre = NULL ,*a=NULL , *b=NULL , *imp = NULL;
+
+    if (a_pos == b_pos)
+    {
+        return f;
+    }
+
+    if(a_pos>b_pos)
+    {
+        a_pos = a_pos + b_pos;
+        b_pos = a_pos - b_pos;
+        a_pos = a_pos - b_pos;
+    }
+    
+    a=f;
+    b=f;
+
+    for (int i = 1; i <= (a_pos-1); i++)
+    {
+        a_pre = a;
+        a = a->next;
+    }
+    for (int i = 1; i <= (b_pos-1); i++)
+    {
+        b_pre = b;
+        b = b->next;
+    }
+    
+
+    if ( (a == NULL) || (b == NULL))
+    {
+        return f;
+    }
+    
+    if (a_pre== NULL)
+    {
+        a_pre = a;
+        f = b;
+    }
+    if (b_pre== NULL)
+    {
+        b_pre = b;
+        f = a;
+    }
+    if (a_pos - b_pos == 1 || b_pos - a_pos == 1)
+    {
+        a_pre->next = b;
+        b_pre->next = a;
+
+        imp = a->next;
+        a->next = b->next;
+        b->next = imp;
+    }
+    else
+    {    imp = a->next;
+        a_pre->next = b;
+        b_pre->next = a;
+
+        a->next = b->next;
+        b->next = imp;
+    }
+    return f;
+    
+}
+
+struct node* shuffle(struct node *f)
+{
+    struct node *t=NULL,*s=NULL;
+    unsigned int cnt=1;
+    int temp;
+
+    for ( t = f; t->next != NULL ; t = t->next)
+    {
+        cnt++;
+    }
+    
+    srand(time(NULL));
+
+    s=f;
+    for (int i = 1; i <= cnt; i++)
+    {
+        while (1)
+        {
+            temp = rand() % cnt;
+            if (temp >= 1)
+                break;
+        }
+        s = SWAP(s,i,temp);
+    }
+
+    f = s;
+    printf("\nLinked list is shuffled successfully !\n");
+
+    return f;
+}
+
+struct node* sort_by_bubble_sort(struct node *f)
+{
+    struct node *t=NULL,*s=NULL;
+    unsigned int cnt=1;
+    register int i ,j;
+    int k=1,p=2;
+
+    for ( t = f; t->next != NULL ; t = t->next)
+    {
+        cnt++;
+    }
+    t = f;
+    s = f;
+    for ( i = cnt-1; i > 0 ; i--)
+    {
+        s = t;
+        k = 1,p = 2;
+
+        for ( j = 1; j <= i ; j++)
+        {
+            if ( s->data > s->next->data)
+            {
+                s = SWAP(t,k,p);
+                t = s;
+                for (int a = 1; a < j; a++)
+                {
+                    s = s->next;
+                }
+            }
+            s = s->next;
+            k++;
+            p++;
+        }
+        
+    }
+    f = t;
+    return f;
+}
+
+struct node* sort_by_selection_sort(struct node *f)
+{
+    struct node *t=NULL,*s=NULL,*l=NULL;
+    unsigned int cnt=1;
+    register int i ,j;
+    int k=1,p=2;
+
+    for ( t = f; t->next != NULL ; t = t->next)
+    {
+        cnt++;
+    }
+    
+    s = l = t = f;
+
+    k = 2;
+    for ( i = 1; i < cnt ; i++)
+    {
+        s = l->next;
+        p = k;
+        for ( j = i+1; j <= cnt; j++)
+        {
+            if ( l->data > s->data)
+            {
+                s = SWAP(t,i,p);
+                t = s;
+                l = t;
+                for (int a = 1; a < j; a++)
+                {
+                    s = s->next;
+                }
+                for (int a = 1; a < i; a++)
+                {
+                    l = l->next;
+                }
+                
+            }
+            s = s->next;
+            p++;
+        }
+        k++;
+        l = l->next;
+    }
+    f = t; 
+    return f;
+}
+
 int main()
 {
     struct node *head;
     unsigned int n=0;
+    char ch;
 
     printf("\nHow many nodes do you want to create : ");
     scanf("%d",&n);
@@ -524,7 +762,25 @@ int main()
         printf("Value given for creating nodes is less than 1 !\n");
         exit(0);
     }
-    head = create(n);
+
+    printf("\n*** Enter 1 if you are giving data ");
+    printf("\n*** Enter 2 if you are not giving data  \n");
+    printf("       Enter : ");
+    getchar();
+    scanf("%c",&ch);
+
+    switch (ch)
+    {
+        case '1':
+                head = create_manually(n);
+                break;
+        case '2':
+                head = create_auto(n);
+                break;
+        default:
+                printf("\nInvalid Input !\n");
+                exit(0);
+    }
     
 
     while (1)
@@ -534,9 +790,9 @@ int main()
         sleep(1);
         printf("\n***_MENU_***\n");
         printf("1~>Display Linked List\n2~>Add node at first\n3~>Add node at last\n4~>Delete first node\n5~>Delete last node\n6~>Insert node\n7~>Delete node\n8~>Count odd & even Data\n9~>Count positive & negative Data\n10~>Search an element\n11~>Count length of linked list\n12~>Append linked list \n13~>Display reverse\n14~>Reversing a linked list\n");
-        printf("15~>Swapping two nodes\n16~>Get data at first node\n17~>Get data at last node\n18~>Get data at any node\n19~>Get index of data\n20~>Swap Nodes Pairwise ");
-        printf("\n21~>Exit\n");
-        printf("         ...NOTE :- PRESS 21 TO END THE PROGRAM \n");
+        printf("15~>Swapping two nodes\n16~>Get data at first node\n17~>Get data at last node\n18~>Get data at any node\n19~>Get index of data\n20~>Swap Nodes Pairwise\n21~>Shuffle linked list\n22~>Sorting LINKED LIST by bubble sort\n23~>Sorting Linked list by Selection Sort ");
+        printf("\n24~>Exit\n");
+        printf("         ...NOTE :- PRESS 24 TO END THE PROGRAM \n");
         printf("\nChoose one of above : ");
         scanf("%d",&choice);
 
@@ -689,7 +945,18 @@ int main()
                     head = swap_pairwise(head);
                     break;
             case 21:
+                    head = shuffle(head);
+                    break;
+            case 22:
+                    head = sort_by_bubble_sort(head);
+                    printf("\nLinked list is sorted successfully !\n");
+                    break;
+            case 23:
+                    head = sort_by_selection_sort(head);
+                    break;
+            case 24:
                     head = free_all(head);
+                    printf("\n[ EXITED.. ]\n");
                     exit(0);        
         default:
             printf("Invalid option is selected !\n");
